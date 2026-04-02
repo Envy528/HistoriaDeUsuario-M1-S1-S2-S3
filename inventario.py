@@ -9,3 +9,5 @@ while True:
         print("Enter a valid value (E.g.Name = soap; price = 2.3; quantity = 2)")
 
 total_cost = productPrice * productQuantity
+
+print(f"Product: {productName} | Price: {productPrice} | Quantity: {productQuantity} | Total: {total_cost}")
