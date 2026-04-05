@@ -7,9 +7,9 @@ def add_product(inventory, product):
     #Try block to validate the user's input
     try:
         #Data entry of the product
-        productName = input("Enter the product's name:  ")
-        productPrice = float(input(f"Enter the {productName} price: "))
-        productQuantity = int(input(f"Enter the {productName} quantity: "))
+        productName = input("Enter the product's name: ").lower()
+        productPrice = float(input(f"Enter the {productName.capitalize()} price: "))
+        productQuantity = int(input(f"Enter the {productName.capitalize()} quantity: "))
         print("\nProduct sucessfuly added!")
         #Storing the data
         product = { #Dictionary
@@ -35,7 +35,7 @@ def show_inventory(inventory):
         #For that goes through the inventory to acces the products
         for idx, productInv in enumerate(inventory):
             print(f"\nProduct {idx+1}:") #The number of the product 
-            print(f"Name: {productInv["name"]} | Price: {productInv["price"]} | Quantity: {productInv["quantity"]}") #Message showing the product
+            print(f"Name: {productInv["name"].capitalize()} | Price: {productInv["price"]} | Quantity: {productInv["quantity"]}") #Message showing the product
 
 
 #Search product
@@ -47,7 +47,7 @@ def search_product(inventory, productName):
     inInventory = False
     for product in inventory:
         if product["name"] == productName:
-            print(f"{product["name"]}\nPrice: ${product["price"]} | Quantity: {product["quantity"]}")
+            print(f"Product: {product["name"].capitalize()}\nPrice: ${product["price"]} | Quantity: {product["quantity"]}")
             inInventory = True
     if inInventory == False:
         print("The product is not in inventory")
@@ -85,16 +85,36 @@ def delete_product(inventory, productName):
         print("The product is not in inventory")
 
 #Calculate Statistics
-def calculate_statistics(inventory, totalInventory):
+def calculate_statistics(inventory):
     """
-    function that calculates the inventory total value and the total products registered in it
+    This functions calculates:
+    Total Units
+    Total Value
+    Most Expensive Product
+    Highest Stocked Product    
     """
+    totalUnits = 0
+    totalValue = 0
+    mostExpensive = inventory[0]
+    highestStock = inventory[0]
+    subtotal = (lambda p: p["price"] * p["quantity"])
+
     #Validation if the inventory is empty
     if not inventory:
         print("\nThe inventory is empty, there's nothing to calculate") #Message for the user to notice the inventory is empty, so no calculation can be done
     else:
-        #Accesing the inventory looking for the products
-        for productInv in inventory:
-            totalProduct = productInv["price"] * productInv["quantity"] #Calculating the total individual product value by multiplicating it's price for it's quantity
-            totalInventory += totalProduct #Adding all the totals individual prices of the products to store the inventory's value
-        print(f"\nTotal value in inventory: {totalInventory}\nTotal Products Registered: {len(inventory)}") #MEssage showing the calculations
+        for product in inventory:
+            totalUnits += product.get("quantity")
+            totalValue += subtotal(product)
+
+            if product.get("price") > mostExpensive.get("price"):
+                mostExpensive = product
+            
+            if product.get("quantity") > highestStock.get("quantity"):
+                highestStock = product
+
+        print(f"Total Units: {totalUnits}")
+        print(f"Total Value: {totalValue}")
+        print(f"Most Expensive Product: {mostExpensive.get("name")} | $ {mostExpensive.get("price")}")
+        print(f"Highest Stocked Product: {highestStock.get("name")} | {highestStock.get("quantity")} Units")
+
