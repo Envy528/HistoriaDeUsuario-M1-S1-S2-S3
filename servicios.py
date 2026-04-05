@@ -47,10 +47,8 @@ def search_product(inventory, productName):
     inInventory = False
     for product in inventory:
         if product["name"] == productName:
-            print(f"Product: {product["name"].capitalize()}\nPrice: ${product["price"]} | Quantity: {product["quantity"]}")
-            inInventory = True
-    if inInventory == False:
-        print("The product is not in inventory")
+            return product
+    return None
 
 #Update product
 def update_product(inventory, productName, productNewPrice, productNewQuantity):

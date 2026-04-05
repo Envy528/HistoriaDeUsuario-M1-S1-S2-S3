@@ -1,5 +1,5 @@
 from servicios import *    
-
+from archivos import *
 #Initialize variables 
 inventory = [] 
 product = {}
@@ -21,7 +21,8 @@ while option != "9": #While to iterate until the user decides to leave
     elif option == "3":
         print("\nYou chose to search for a product (option 3)") #Showing the user the option they selected
         productName = input("Enter the product's name you are looking for: ").lower() #Ask the product's name that the user wants
-        search_product(inventory, productName)
+        product = search_product(inventory, productName)
+        print(f"Product: {product.get("name").capitalize()}\nPrice: $ {product.get("price")} | {product.get("quantity")} units")
     elif option == "4":
         print("\nYou chose to update a product (option 4)") #Showing the user the option they selected
         try:
@@ -40,12 +41,44 @@ while option != "9": #While to iterate until the user decides to leave
         calculate_statistics(inventory)
     elif option == "7":
         print("\nYou chose to save the CSV (option 7)") #Showing the user the option they selected
-
+        fileName = input("File Name and the extension (I.g: Example.csv)\nFile Name: ")
+        save_csv(inventory, fileName)
     elif option == "8":
         print("\nYou chose to load the CSV (option 8)") #Showing the user the option they selected
+        fileName = input("File Name and the extension (I.g: Example.csv)\nFile Name: ")
+        newData, errors = load_csv(fileName)
+
+        if len(newData) > 0:
+            csvOption = input("Overwrite inventory? (Y/N): ")
+
+            if csvOption.upper() == "Y":
+                inventory = newData
+                action = "replaced"
+            elif csvOption.upper() == "N":
+                #Merge Inventories
+                for newProduct in newData:
+                    existing = search_product(inventory, newProduct["name"])
+
+                    if existing:
+                        existing["quantity"] += newProduct["quantity"]
+                        if existing["price"] != newProduct["price"]:
+                            existing["price"] = newProduct["price"]
+                    else:
+                        inventory.append(newProduct)
+                action = "merged"
+            else:
+                print("Invalid choice, the inventory was not modified")
+                action = "not modified"
+            
+            print(f"Loaded: {len(newData)} products")
+            print(f"Invalid rows: {errors}")
+            print(f"Inventory {action}")
+        else:
+            print("No valid data loaded")
+
 
     elif option == "9":
-        print("Goodbye!!") #End the program
+        print("You selected to exit the program\nGoodbye!!!") #End the program
 
     #Validation in case the user inputs a wrong option
     else:
